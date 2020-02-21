@@ -1,0 +1,77 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <title>canvas能实现划线的画板</title>
+  <style>
+    *{
+      padding: 0;
+      margin: 0;
+      box-sizing: border-box;
+    }
+    canvas {
+      border: 1px solid red;
+
+    }
+  </style>
+</head>
+<body>
+<canvas id="canvas"></canvas>
+<script>
+  let controlPainting = false;
+  let posX = '';
+  let posY = '';
+  const canvas = document.getElementById("canvas");
+  // 设置canvas宽高
+  canvas.width = document.documentElement.clientWidth;
+  canvas.height = document.documentElement.clientHeight;
+  const ctx = canvas.getContext("2d");
+  ctx.lineWidth = 6;
+  ctx.lineCap = 'round';
+  // 判断是否触屏设备
+  const isTouchDevice = 'ontouchstart' in document.documentElement;
+  // 触屏设备
+  if(isTouchDevice) {
+    canvas.ontouchstart = (e) => {
+      posX = e.targetTouches[0].clientX;
+      posY= e.targetTouches[0].clientY;
+    };
+    canvas.ontouchmove = (e) => {
+      drawLine(posX, posY, e.targetTouches[0].clientX, e.targetTouches[0].clientY);
+      posX = e.targetTouches[0].clientX;
+      posY= e.targetTouches[0].clientY;
+    }
+  }else {
+    // pc设备
+    canvas.onmousedown = (e) => {
+      controlPainting = true;
+      posX = e.clientX;
+      posY= e.clientY;
+    };
+    canvas.onmousemove = (e) => {
+      if (!controlPainting) {
+        return false;
+      }
+      drawLine(posX, posY, e.clientX, e.clientY);
+      posX = e.clientX;
+      posY= e.clientY;
+    }
+    canvas.onmouseup = (e) => {
+      controlPainting = false;
+    }
+  }
+  // 画线
+  let drawLine = (originX, originY, finalX, finalY) => {
+    console.log(originX, originY, finalX, finalY)
+    // 新建一条路径
+    ctx.beginPath();
+    // 起点
+    ctx.moveTo(originX, originY);
+    // 终点
+    ctx.lineTo(finalX, finalY);
+    // 填充
+    ctx.stroke();
+  }
+</script>
+</body>
+</html>
